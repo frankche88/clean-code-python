@@ -7,6 +7,8 @@ import unittest
 from dirtycode.domain import Speaker, WebBrowser, Session
 from array import array
 from dirtycode.infrastructure import SqlServerRepository
+from dirtycode.exceptions import SpeakerDoesntMeetRequirementsException,\
+    NoSessionsApprovedException
 
 
 class Test(unittest.TestCase):
@@ -68,6 +70,37 @@ class Test(unittest.TestCase):
         speakerId = speaker.register(SqlServerRepository());
 
         self.assertTrue(speakerId)
+        
+        
+
+    def test_register_SingleSessionThatsOnOldTech_ThrowsNoSessionsApprovedException(self):
+        speaker = self.getSpeakerThatWouldBeApproved();
+        speaker.setSessions([Session("Cobol for dummies", "Intro to Cobol")]);
+        with self.assertRaises(NoSessionsApprovedException):
+            speaker.register(self._repository);
+    
+
+    def test_register_NoSessionsPassed_ThrowsArgumentException(self):
+        speaker = self.getSpeakerThatWouldBeApproved();
+        speaker.setSessions([]);
+        with self.assertRaises(ValueError):
+            speaker.register(self._repository);
+
+    def test_register_DoesntAppearExceptionalAndUsingOldBrowser_ThrowsNoSessionsApprovedException(self):
+        speakerThatDoesntAppearExceptional = self.getSpeakerThatWouldBeApproved();
+        speakerThatDoesntAppearExceptional.setHasBlog(False);
+        speakerThatDoesntAppearExceptional.setBrowser(WebBrowser("IE", 6));
+        with self.assertRaises(SpeakerDoesntMeetRequirementsException):
+            speakerThatDoesntAppearExceptional.register(self._repository);
+    
+
+    def test_register_DoesntAppearExceptionalAndHasAncientEmail_ThrowsNoSessionsApprovedException(self):
+        speakerThatDoesntAppearExceptional = self.getSpeakerThatWouldBeApproved()
+        speakerThatDoesntAppearExceptional.setHasBlog(False);
+        speakerThatDoesntAppearExceptional.setEmail("name@aol.com")
+        with self.assertRaises(SpeakerDoesntMeetRequirementsException):
+            speakerThatDoesntAppearExceptional.register(self._repository)
+
     
     def test_upper(self):
         self.assertEqual('foo'.upper(), 'FOOss')
