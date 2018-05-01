@@ -4,7 +4,6 @@ Created on 29 abr. 2018
 
 @author: Pc
 '''
-from array import array
 from enum import Enum
 
 from exceptions import *
@@ -118,7 +117,6 @@ class Speaker(object):
         return isApproved;
     
     def isGoodSpeaker(self):
-        isGoodSpeaker = False
         haveExperience = self._experience > self._MIN_YEAR_OF_EXPERIENCE
         haveMinCertificates = len(self._certifications) > self._MIN_CERTIFICATES
 
@@ -132,17 +130,13 @@ class Speaker(object):
             isIE = self._browser.getName() == BrowserName.InternetExplorer
             isLessThanMinVersion = self._browser.getMajorVersion() < self._MIN_BROWSER_VERSION
 
-            isValidBrowser = not(isIE and isLessThanMinVersion);
-            print(isValidBrowser) 
-            print("dominio en lista")
-            print(emailDomain in self._domains)
+            isValidBrowser = not(isIE and isLessThanMinVersion)
             if (not (emailDomain in self._domains) and isValidBrowser):
                 isGoodSpeaker = True;
             
         return isGoodSpeaker;
     
     def register(self, repository):
-        speakerId = 0;        
         
         if (not self._firstName):
             raise ValueError("First Name is required")
